@@ -133,14 +133,11 @@ searchForm.addEventListener('submit', function (event) {
     renderPaginator(users.length)
     renderUserList(getUserByPage(1))
   }
-  users.filter(function getFilterUser(user) {
-    if (user.name.trim().toLowerCase().includes(keyWord) ||
-      user.surname.trim().toLowerCase().includes(keyWord) ||
-      user.gender.trim().toLowerCase().includes(keyWord) ||
-      user.region.trim().toLowerCase().includes(keyWord)) {
-      filteredUser.push(user)
-    }
-  })
+   filteredUser = users.filter(function getFilterUser(user) {
+    return user.name.trim().toLowerCase().includes(keyWord) || user.surname.trim().toLowerCase().includes(keyWord) || user.gender.trim().toLowerCase().includes(keyWord) || user.region.trim().toLowerCase().includes(keyWord)
+      // filteredUser.push(user) 助教特別提醒：這個很危險不要這麼做！
+    })
+  
   if (filteredUser.length === 0) {
     return alert(`沒有用戶符合關鍵字：${keyWord}`)
   }
@@ -151,26 +148,27 @@ searchForm.addEventListener('submit', function (event) {
 
 //蒐藏好友功能挑戰!
 addFavoriteBtn.addEventListener('click', function (event) {
+  //console.log(Number(event.target.dataset.id))
   addFavoriteUser(Number(event.target.dataset.id))
 })
 
 function addFavoriteUser(id) {
   let favoriteList = JSON.parse(localStorage.getItem('favoriteUsers')) || []
-
+  console.log(favoriteList)
   if (favoriteList.some(function (data) { return data && data.id === id })) {
     return alert("此用戶已在我的最愛中囉！")
   }
-  if (favoriteList.some(function (data) { return null })) {
-    return alert("操作速度太快囉！請稍等一下")
-  }
+  // if (favoriteList.some(function (data) { return null })) {
+  //   return alert("操作速度太快囉！請稍等一下")
+  // }
   let favoriteUser = users.find(function (user) {
     return user.id === id
   })
-
+  if (favoriteUser){
   favoriteList.push(favoriteUser)
   localStorage.setItem('favoriteUsers', JSON.stringify(favoriteList))
-  console.log(favoriteList)
-
+  //console.log(favoriteList)
+  }
 }
 
 //分頁器挑戰！
@@ -191,7 +189,7 @@ function getUserByPage(page) {
   let startIndex = (page - 1) * USER_PER_PAGE
   let endIndex = startIndex + USER_PER_PAGE //稍後用slice不會包含結尾index的值
   let data = filteredUser.length ? filteredUser : users
-  return usersByPage = data.slice(startIndex, endIndex)
+  return data.slice(startIndex, endIndex)
 }
 
 paginator.addEventListener('click', function (event) {
